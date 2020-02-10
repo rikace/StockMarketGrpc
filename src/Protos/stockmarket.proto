@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "customtypes.proto";
+
+package StockMarket.Grpc.proto;
+
+option csharp_namespace = "StockMarket.Grpc.Proto";
+
+//package CustomTypes;
+
+service StockMarketService {
+    // query the server for paticolar stock and date - return stock 
+    rpc GetStock (StockRequest) returns (StockData);
+    rpc GetStockHistory (StockHistoryRequest) returns (StockHistoryReply);
+
+
+    // request stock market stream - return StockMarketData stocks array
+    rpc GetStockMarketStream (google.protobuf.Empty) returns (stream StockData);
+
+    // send request as steram for stock + datetime - return stock  
+    rpc GetStockStream (stream StockRequest) returns (stream StockReply);
+}
+
+message Decimal {
+    int64 units = 1;
+    sfixed32 nanos = 2;
+}
+
+message StockRequest {
+  string symbol = 1; 
+  google.protobuf.Timestamp date = 2;
+}
+
+message StockHistoryRequest {
+  string symbol = 1;
+}
+
+message StockData {
+  string symbol = 1;  
+  Decimal dayOpen = 2;
+  Decimal dayLow = 3;
+  Decimal dayHigh = 4;
+  Decimal LastChange = 5;
+  Decimal price = 6;
+  google.protobuf.Timestamp date = 7;
+}
+
+message StockHistoryReply {
+  repeated StockData stockData = 1;
+}
+
+message StockReply {
+  string symbol = 1;
+  Decimal bestPrice = 2;
+  Decimal worstPrice = 3;
+  google.protobuf.Timestamp bestDate = 4;
+  google.protobuf.Timestamp worstDate = 5;
+}

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="StockMarket.fs" />
+        <Compile Include="Program.fs" />
+        <Content Include="Tickers\aapl.csv" />
+        <Content Include="Tickers\amzn.csv" />
+        <Content Include="Tickers\fb.csv" />
+        <Content Include="Tickers\goog.csv" />
+        <Content Include="Tickers\msft.csv" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FSharp.Control.AsyncSeq" Version="2.0.23" />
+      <PackageReference Include="System.Reactive" Version="4.3.2" />
+    </ItemGroup>
+
+</Project>
