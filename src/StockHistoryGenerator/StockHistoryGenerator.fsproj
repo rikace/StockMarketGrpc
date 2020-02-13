@@ -8,11 +8,21 @@
     <ItemGroup>
         <Compile Include="StockMarket.fs" />
         <Compile Include="Program.fs" />
-        <Content Include="Tickers\aapl.csv" />
-        <Content Include="Tickers\amzn.csv" />
-        <Content Include="Tickers\fb.csv" />
-        <Content Include="Tickers\goog.csv" />
-        <Content Include="Tickers\msft.csv" />
+        <Content Include="Tickers\aapl.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Tickers\amzn.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Tickers\fb.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Tickers\goog.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="Tickers\msft.csv">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

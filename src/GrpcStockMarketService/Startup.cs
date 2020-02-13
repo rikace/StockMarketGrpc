@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Grpc.HealthCheck;
+using StockMarket.Grpc.Server.Services;
 
 namespace StockMarket.Grpc.Service
 {
@@ -26,11 +27,8 @@ namespace StockMarket.Grpc.Service
 
 
             services.AddGrpc();
-
             services.AddHealthChecks();
-
             services.AddSingleton<HealthServiceImpl>();
-
             services.AddHostedService<StatusService>();
         }
 
@@ -46,7 +44,9 @@ namespace StockMarket.Grpc.Service
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapGrpcService<HealthServiceImpl>();
+                endpoints.MapGrpcService<StockMarketService>();
 
                 endpoints.MapGet("/",
                     async context =>

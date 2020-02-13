@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{04F44A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.WebApp", "StockMarket.WebApp\StockMarket.WebApp.csproj", "{3DB61624-D34E-4F28-AC80-8502F1A91812}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Grpc.ClientLib", "StockMArket.Grpc.ClientLib\StockMarket.Grpc.ClientLib.csproj", "{13F6950C-3512-4DB2-979E-AF13A326F95D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Grpc.Client", "StockMarket.Grpc.Client\StockMarket.Grpc.Client.csproj", "{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{3DB61624-D34E-4F28-AC80-8502F1A91812}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DB61624-D34E-4F28-AC80-8502F1A91812}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DB61624-D34E-4F28-AC80-8502F1A91812}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13F6950C-3512-4DB2-979E-AF13A326F95D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13F6950C-3512-4DB2-979E-AF13A326F95D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13F6950C-3512-4DB2-979E-AF13A326F95D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13F6950C-3512-4DB2-979E-AF13A326F95D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

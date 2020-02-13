@@ -3,7 +3,7 @@
     "GrpcStockMarketService": {
       "commandName": "Project",
       "launchBrowser": false,
-      "applicationUrl": "https://localhost:5001",
+      "applicationUrl": "https://localhost:5005",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

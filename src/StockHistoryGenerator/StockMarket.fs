@@ -16,7 +16,10 @@ module StockMarket =
     open System.Reactive.Concurrency
     open System.Reactive.Linq
     
-    let tickersDirectory = DirectoryInfo("../../../Tickers")
+    let tickersDirectory = DirectoryInfo("../StockHistoryGenerator/Tickers")
+
+    let observerOn obs = Observable.ObserveOn(obs, TaskPoolScheduler.Default)
+    let subscribeOn obs = Observable.SubscribeOn(obs, TaskPoolScheduler.Default)
     
     [<CLIMutableAttribute>]
     type Stock =
@@ -30,7 +33,7 @@ module StockMarket =
         
         static member Create (symbol: string) price =
             { Symbol   = symbol
-              Date     = DateTime.Now // TODO Fix me
+              Date     = DateTime.UtcNow // TODO Fix me
               LastChange = 0M
               Price   = price
               DayOpen = 0M
@@ -57,7 +60,7 @@ module StockMarket =
                     let close = parseDouble cells.[4]
                     {
                         Symbol = symbol
-                        Date = dt
+                        Date = dt.ToUniversalTime()
                         LastChange = close
                         Price = open'
                         DayOpen = open'
@@ -65,6 +68,15 @@ module StockMarket =
                         DayHigh = high
                     } |> Some
                 | _, _ -> None
+
+    [<CLIMutableAttribute>]
+    type StockPriceRange =
+        { Symbol     : string
+          BestPrice  : decimal
+          WorstPrice : decimal        
+          BestDate   : DateTime 
+          WorstDate  : DateTime  }
+
 
     let private changePrice (stock : Stock) (price : decimal) =
         if price = stock.Price then stock
@@ -116,8 +128,7 @@ module StockMarket =
          } |> Observable.toObservable TaskPoolScheduler.Default
 
     let observableStream (delay : float) (f: string -> string -> Stock option) =
-        let filePaths = tickersDirectory.GetFiles("*.csv")
-        
+        let filePaths = tickersDirectory.GetFiles("*.csv")        
         let startDate = DateTime(2001,1,1)
 
         let streams =
@@ -129,11 +140,16 @@ module StockMarket =
                 |> Observable.zip (fun stock tick ->
                     { stock with Date = startDate + TimeSpan.FromDays(float tick)} ) tickerObs)
             |> Seq.reduce(fun a b -> Observable.merge a b)
-        streams
-                
-                
+        streams |> subscribeOn
+
+    [<CompiledName("StcokStream")>]
+    let stockStream () =
+        observableStream 50. Stock.parse 
+
+
     [<CompiledName("RetrieveStockHistory")>]
     let retrieveStockHistory (ticker: string) = Async.StartAsTask <| async {
+     
          let tickerHistory =
              tickersDirectory.GetFiles("*.csv")
              |> Seq.tryFind(fun f -> String.Compare(ticker, Path.GetFileNameWithoutExtension(f.Name), true) = 0)
@@ -153,9 +169,25 @@ module StockMarket =
                          yield stock
                  }
                  |> AsyncSeq.choose id
-                 |> AsyncSeq.toArrayAsync
+                 |> AsyncSeq.toArrayAsync                 
              return stocks
     }
+
+    [<CompiledName("StockPriceRangeHistory")>]
+    let stockHistoryStream (ticker: string) = Async.StartAsTask <| async {
+        let! data = retrieveStockHistory ticker |> Async.AwaitTask
+        let bestStock = data |> Array.maxBy(fun s -> s.DayHigh)
+        let worstStock = data |> Array.minBy(fun s -> s.DayLow)
+        let stockPriceRangeHistory = {
+            StockPriceRange.Symbol = ticker
+            StockPriceRange.BestPrice = bestStock.DayHigh
+            StockPriceRange.BestDate = bestStock.Date
+            StockPriceRange.WorstPrice = worstStock.DayLow
+            StockPriceRange.WorstDate = worstStock.Date
+        }
+        return stockPriceRangeHistory;
+    }
+                  
 
     [<CompiledName("SearchStock")>]
     let searchStock (ticker: string) (date: DateTime) = Async.StartAsTask <| async {
