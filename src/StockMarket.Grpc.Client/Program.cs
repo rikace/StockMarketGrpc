@@ -16,11 +16,10 @@ namespace StockMarket.Grpc.Client
 
             var client = new StockMarketServiceClient(channel);
 
-            string symbol = "";
-            while(symbol != null)
+            while(true)
             {
                 Console.WriteLine("Specify Symbol to retrieve history");
-                symbol = Console.ReadLine();
+                string symbol = Console.ReadLine();
                 if (symbol == "q")
                     break;
 
@@ -31,7 +30,7 @@ namespace StockMarket.Grpc.Client
 
                 foreach (var stockData in reply.StockData)
                 {
-                   Console.WriteLine($"Date {stockData.Date.ToDateTime():s} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
+                   Console.WriteLine($"Symbol {stockData.Symbol} - Date {stockData.Date.ToDateTime():s} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
                 }
             }
 

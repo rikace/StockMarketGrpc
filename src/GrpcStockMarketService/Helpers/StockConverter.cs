@@ -25,20 +25,28 @@ namespace StockMarket.Grpc.Server.Helpers
         { return value.Units + value.Nanos / NanoFactor;
         }
 
-        
+
         public static StockMarket.Grpc.Proto.StockData ToStockData(this Stock stock)
         {
-            var stockData = new StockMarket.Grpc.Proto.StockData
+            try
             {
-                Symbol = stock.Symbol,
-                Date = stock.Date.ToTimestamp(),
-                DayHigh = FromDecimal(stock.DayHigh),
-                DayLow = FromDecimal(stock.DayLow),
-                DayOpen = FromDecimal(stock.DayOpen),
-                LastChange = FromDecimal(stock.LastChange),
-                Price = FromDecimal(stock.Price)
-            };
-            return stockData;
+                var stockData = new StockMarket.Grpc.Proto.StockData
+                {
+                    Symbol = stock.Symbol,
+                    Date = stock.Date.ToTimestamp(),
+                    DayHigh = FromDecimal(stock.DayHigh),
+                    DayLow = FromDecimal(stock.DayLow),
+                    DayOpen = FromDecimal(stock.DayOpen),
+                    LastChange = FromDecimal(stock.LastChange),
+                    Price = FromDecimal(stock.Price)
+                };
+                return stockData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public static Stock ToStock(this StockMarket.Grpc.Proto.StockData stockData)

@@ -129,7 +129,7 @@ module StockMarket =
 
     let observableStream (delay : float) (f: string -> string -> Stock option) =
         let filePaths = tickersDirectory.GetFiles("*.csv")        
-        let startDate = DateTime(2001,1,1)
+        let startDate = DateTime(2001,1,1).ToUniversalTime()
 
         let streams =
             filePaths
