@@ -12,7 +12,7 @@ let main argv =
     
     Console.ReadLine() |> ignore
     
-    let stockObservable = StockMarket.observableStream (500.) StockMarket.Stock.parse
+    let stockObservable = StockMarket.observableStream StockMarket.Stock.parse
     
     stockObservable.Subscribe(fun s -> printfn "%s - %A" s.Symbol s.LastChange) |> ignore
     

@@ -29,10 +29,8 @@ namespace StockMarket.Grpc.ClientServerStreaming
                 try
                 {
                     await foreach (var stockReply in stockStreamService.ResponseStream.ReadAllAsync())
-                    {
-                        var date =  stockReply.BestDate.ToDateTime();
-
-                        //Console.WriteLine($"{forecast.TownName} = {date:s} | {forecast.WeatherData.Summary} | {forecast.WeatherData.TemperatureC} C");
+                    {                       
+                        PrintStockInfo(stockReply);
                     }
                 }
                 catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
@@ -47,21 +45,26 @@ namespace StockMarket.Grpc.ClientServerStreaming
 
             var datesUtc = Dates.Select(datesUtc => datesUtc.ToUniversalTime()).ToArray();
 
-            foreach (var symbol in new[] { "APPL", "AMZN", "FB", "GOOG", "MSFT" })
+            for (int i = 0; i < 5; i++)
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"Requesting stock info for {symbol}...");
-                Console.ResetColor();
-
-                int index  = rnd.Next(Dates.Count);
-
-                await stockStreamService.RequestStream.WriteAsync(new StockRequest
+                foreach (var symbol in new[] { "AAPL", "AMZN", "FB", "GOOG", "MSFT" })
                 {
-                    Symbol = symbol,
-                    Date = datesUtc[index].ToTimestamp()
-                });
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"Requesting stock info for {symbol}...");
+                    Console.ResetColor();
 
-                await Task.Delay(2500); // simulate delay getting next item
+                    int index = rnd.Next(Dates.Count);
+                    var date = datesUtc[index].ToTimestamp();
+                    Console.WriteLine($"Requesting Stock {symbol} history for date {date.ToDateTime().ToString("MM/dd/yyyy")}...");
+
+                    await stockStreamService.RequestStream.WriteAsync(new StockRequest
+                    {
+                        Symbol = symbol,
+                        Date = date
+                    });
+
+                    await Task.Delay(2500); // simulate delay getting next item
+                }
             }
 
             Console.WriteLine("Completing request stream");
@@ -76,13 +79,13 @@ namespace StockMarket.Grpc.ClientServerStreaming
 
         }
 
-        static void PrintStockInfo(StockReply stockData)
+        static void PrintStockInfo(StockPerDateReply stockReply)
         {
             bool compare(string item1, string item2)
                 =>
                 String.Compare(item1, item2, StringComparison.OrdinalIgnoreCase) == 0;
 
-            var symbol = stockData.Symbol;
+            var symbol = stockReply.Symbol;
 
             var color = Console.ForegroundColor;
             if (compare(symbol, "MSFT"))
@@ -96,7 +99,9 @@ namespace StockMarket.Grpc.ClientServerStreaming
             else if (compare(symbol, "AMZN"))
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
-            Console.WriteLine($"Symbol {stockData.Symbol} - Date {stockData.Date.ToDateTime():s} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
+            Console.WriteLine($"Request for Stock {stockReply.Symbol} received...");
+
+            Console.WriteLine($"Symbol {stockReply.Symbol} - Date {stockReply.Date.ToDateTime().ToString("MM/dd/yyyy")} - High Price {ToDecimal (stockReply.BestPrice)} - Low Price {ToDecimal (stockReply.WorstPrice)}");
             Console.ForegroundColor = color;
         }
 
@@ -105,72 +110,76 @@ namespace StockMarket.Grpc.ClientServerStreaming
         static List<DateTime> Dates = new List<DateTime>
         {
             // year month day
-           new DateTime(17,5,31 ),
-           new DateTime(17,5,11 ),
-           new DateTime(16,8,31 ),
-           new DateTime(17,7,31 ),
-           new DateTime(17,7,28 ),
-           new DateTime(17,7,27 ),
-           new DateTime(17,7,26 ),
-           new DateTime(17,7,25 ),
-           new DateTime(17,7,24 ),
-           new DateTime(17,7,21 ),
-           new DateTime(17,7,20 ),
-           new DateTime(17,7,19 ),
-           new DateTime(17,7,18 ),
-           new DateTime(17,7,17 ),
-           new DateTime(17,7,14 ),
-           new DateTime(17,7,13 ),
-           new DateTime(17,7,12 ),
-           new DateTime(17,7,11 ),
-           new DateTime(17,7,10 ),
-           new DateTime(17,4,28 ),
-           new DateTime(17,4,27 ),
-           new DateTime(17,4,26 ),
-           new DateTime(17,4,25 ),
-           new DateTime(17,4,24 ),
-           new DateTime(17,4,21 ),
-           new DateTime(17,4,20 ),
-           new DateTime(17,4,19 ),
-           new DateTime(17,4,18 ),
-           new DateTime(17,4,17 ),
-           new DateTime(17,4,13 ),
-           new DateTime(17,4,12 ),
-           new DateTime(17,4,11 ),
-           new DateTime(17,4,10 ),
-           new DateTime(16,10,31 ),
-           new DateTime(16,10,28 ),
-           new DateTime(16,10,27 ),
-           new DateTime(16,10,26 ),
-           new DateTime(16,10,25 ),
-           new DateTime(16,10,24 ),
-           new DateTime(16,10,21 ),
-           new DateTime(16,10,20 ),
-           new DateTime(16,10,19 ),
-           new DateTime(16,10,18 ),
-           new DateTime(16,10,17 ),
-           new DateTime(16,10,14 ),
-           new DateTime(16,10,13 ),
-           new DateTime(16,10,12 ),
-           new DateTime(16,10,11 ),
-           new DateTime(16,10,10 ),
-           new DateTime(16,6,30 ),
-           new DateTime(16,6,29 ),
-           new DateTime(16,6,28 ),
-           new DateTime(16,6,27 ),
-           new DateTime(16,6,24 ),
-           new DateTime(16,6,23 ),
-           new DateTime(16,6,22 ),
-           new DateTime(16,6,21 ),
-           new DateTime(16,6,20 ),
-           new DateTime(16,6,17 ),
-           new DateTime(16,6,16 ),
-           new DateTime(16,6,15 ),
-           new DateTime(16,6,14 ),
-           new DateTime(16,6,13 ),
-           new DateTime(16,6,10 )
+           new DateTime(2017,5,31),
+           new DateTime(2017,5,11),
+           new DateTime(2016,8,31),
+           new DateTime(2017,7,31),
+           new DateTime(2017,7,28),
+           new DateTime(2017,7,27),
+           new DateTime(2017,7,26),
+           new DateTime(2017,7,25),
+           new DateTime(2017,7,24),
+           new DateTime(2017,7,21),
+           new DateTime(2017,7,20),
+           new DateTime(2017,7,19),
+           new DateTime(2017,7,18),
+           new DateTime(2017,7,17),
+           new DateTime(2017,7,14),
+           new DateTime(2017,7,13),
+           new DateTime(2017,7,12),
+           new DateTime(2017,7,11),
+           new DateTime(2017,7,10),
+           new DateTime(2017,4,28),
+           new DateTime(2017,4,27),
+           new DateTime(2017,4,26),
+           new DateTime(2017,4,25),
+           new DateTime(2017,4,24),
+           new DateTime(2017,4,21),
+           new DateTime(2017,4,20),
+           new DateTime(2017,4,19),
+           new DateTime(2017,4,18),
+           new DateTime(2017,4,17),
+           new DateTime(2017,4,13),
+           new DateTime(2017,4,12),
+           new DateTime(2017,4,11),
+           new DateTime(2017,4,10),
+           new DateTime(2016,10,31),
+           new DateTime(2016,10,28),
+           new DateTime(2016,10,27),
+           new DateTime(2016,10,26),
+           new DateTime(2016,10,25),
+           new DateTime(2016,10,24),
+           new DateTime(2016,10,21),
+           new DateTime(2016,10,20),
+           new DateTime(2016,10,19),
+           new DateTime(2016,10,18),
+           new DateTime(2016,10,17),
+           new DateTime(2016,10,14),
+           new DateTime(2016,10,13),
+           new DateTime(2016,10,12),
+           new DateTime(2016,10,11),
+           new DateTime(2016,10,10),
+           new DateTime(2016,6,30),
+           new DateTime(2016,6,29),
+           new DateTime(2016,6,28),
+           new DateTime(2016,6,27),
+           new DateTime(2016,6,24),
+           new DateTime(2016,6,23),
+           new DateTime(2016,6,22),
+           new DateTime(2016,6,21),
+           new DateTime(2016,6,20),
+           new DateTime(2016,6,17),
+           new DateTime(2016,6,16),
+           new DateTime(2016,6,15),
+           new DateTime(2016,6,14),
+           new DateTime(2016,6,13),
+           new DateTime(2016,6,10)
         };
 
+        private const decimal NanoFactor = 1_000_000_000;
 
+
+        public static decimal ToDecimal(Proto.Decimal value)
+            => value.Units + value.Nanos / NanoFactor;
     }
 }

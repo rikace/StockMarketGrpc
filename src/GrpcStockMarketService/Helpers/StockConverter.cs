@@ -21,8 +21,8 @@ namespace StockMarket.Grpc.Server.Helpers
         }
 
         public static decimal ToDecimal(this Proto.Decimal value)
-
-        { return value.Units + value.Nanos / NanoFactor;
+        { 
+            return value.Units + value.Nanos / NanoFactor;
         }
 
 

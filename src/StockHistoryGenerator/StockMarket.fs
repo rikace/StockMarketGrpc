@@ -47,26 +47,33 @@ module StockMarket =
             else
                 let cells = row.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 let parseDouble (s : string) =
-                    match Double.TryParse(s) with
-                    | true, x -> decimal x
-                    | _, _ -> -1M
+                    if String.IsNullOrWhiteSpace s then None 
+                    else
+                        match Double.TryParse(s) with
+                        | true, x -> decimal x |> Some
+                        | _, _ -> None
                     
                 match DateTime.TryParse(cells.[0]) with
                 | true, dt ->
                     
-                    let open' = parseDouble cells.[1]
+                    let open' = parseDouble cells.[1]                   
                     let high = parseDouble cells.[2]
                     let low = parseDouble cells.[3]
                     let close = parseDouble cells.[4]
-                    {
-                        Symbol = symbol
-                        Date = dt.ToUniversalTime()
-                        LastChange = close
-                        Price = open'
-                        DayOpen = open'
-                        DayLow = low
-                        DayHigh = high
-                    } |> Some
+                    let isValidStock = 
+                        [open'; high; low; close] |> Seq.forall(fun p -> p.IsSome)
+                    if isValidStock then
+                        {
+                            Symbol = symbol
+                            Date = dt.ToUniversalTime()
+                            LastChange = close.Value
+                            Price = open'.Value
+                            DayOpen = open'.Value
+                            DayLow = low.Value
+                            DayHigh = high.Value
+                        } |> Some
+
+                    else None
                 | _, _ -> None
 
     [<CLIMutableAttribute>]
@@ -111,45 +118,35 @@ module StockMarket =
             Observable.ToObservable(items, scheduler)
     
     let private getLinesObservable (tickerFile : FileInfo) (f: string -> 'a option) =
-         let tickerHistory =
-             seq {
-                 use stream = tickerFile.OpenRead()
-                 use reader = new StreamReader(stream)
-                 while reader.EndOfStream |> not do
-                     let line = reader.ReadLine()
-                     let stock = f line
-                     yield stock
-             } |> Seq.choose id
-            
-         seq {
-             while true do
-                 for tickerRecord in tickerHistory do
-                     yield tickerRecord
-         } |> Observable.toObservable TaskPoolScheduler.Default
+        asyncSeq {
+            use stream = tickerFile.OpenRead()
+            use reader = new StreamReader(stream)
+            while reader.EndOfStream |> not do
+                let! line = reader.ReadLineAsync() |> Async.AwaitTask
+                let stock = f line
+                yield stock
+        } 
+        |> AsyncSeq.choose id
+        |> AsyncSeq.toObservable
+        |> subscribeOn
 
-    let observableStream (delay : float) (f: string -> string -> Stock option) =
-        let filePaths = tickersDirectory.GetFiles("*.csv")        
-        let startDate = DateTime(2001,1,1).ToUniversalTime()
+    let observableStream(f: string -> string -> Stock option) =
+        tickersDirectory.GetFiles("*.csv")        
+        |> Seq.map(fun ticker -> ticker, (Path.GetFileNameWithoutExtension(ticker.Name).ToUpper()))
+        |> Seq.map(fun (tickerFile, ticker) -> getLinesObservable tickerFile (fun row -> f ticker row))
+        |> Seq.reduce(fun a b -> Observable.merge a b)
+        |> observerOn 
 
-        let streams =
-            filePaths
-            |> Seq.map(fun ticker -> ticker, (Path.GetFileNameWithoutExtension(ticker.Name).ToUpper()))
-            |> Seq.map(fun (tickerFile, ticker) -> getLinesObservable tickerFile (fun row -> f ticker row))
-            |> Seq.map(fun tickerObs ->
-                Observable.interval (TimeSpan.FromMilliseconds(delay))
-                |> Observable.zip (fun stock tick ->
-                    { stock with Date = startDate + TimeSpan.FromDays(float tick)} ) tickerObs)
-            |> Seq.reduce(fun a b -> Observable.merge a b)
-        streams |> subscribeOn
-
-    [<CompiledName("StcokStream")>]
+    [<CompiledName("StockStream")>]
     let stockStream () =
-        observableStream 50. Stock.parse 
+        observableStream Stock.parse 
 
 
     [<CompiledName("RetrieveStockHistory")>]
     let retrieveStockHistory (ticker: string) = Async.StartAsTask <| async {
      
+         let files = tickersDirectory.GetFiles("*.csv")
+
          let tickerHistory =
              tickersDirectory.GetFiles("*.csv")
              |> Seq.tryFind(fun f -> String.Compare(ticker, Path.GetFileNameWithoutExtension(f.Name), true) = 0)
@@ -194,10 +191,7 @@ module StockMarket =
          let! stockHistory = 
             retrieveStockHistory ticker |> Async.AwaitTask
      
-         match stockHistory with
-         | [||] -> return None
-         | arr ->
-            return arr |> Array.tryFind (fun t -> t.Date.Date = date.Date) 
+         return stockHistory |> Array.find (fun t -> t.Date.Date = date.Date) 
     }
  
     let stockTickers = lazy (

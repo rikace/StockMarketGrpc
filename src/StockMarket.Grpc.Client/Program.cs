@@ -30,11 +30,17 @@ namespace StockMarket.Grpc.Client
 
                 foreach (var stockData in reply.StockData)
                 {
-                   Console.WriteLine($"Symbol {stockData.Symbol} - Date {stockData.Date.ToDateTime():s} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
+                   Console.WriteLine($"Symbol {stockData.Symbol} - Date {stockData.Date.ToDateTime().ToString("MM/dd/yyyy")} - High Price {ToDecimal (stockData.DayHigh)} - Low Price {ToDecimal (stockData.DayLow)}");
                 }
             }
 
             Console.ReadKey();
+        }
+
+        public static decimal ToDecimal(Proto.Decimal value)
+
+        {
+            return value.Units + value.Nanos / 1_000_000_000;
         }
     }
 }

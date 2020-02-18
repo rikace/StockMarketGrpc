@@ -17,7 +17,7 @@ service StockMarketService {
     rpc GetStockMarketStream (google.protobuf.Empty) returns (stream StockData);
 
     // send request as steram for stock + datetime - return stock  
-    rpc GetStockStream (stream StockRequest) returns (stream StockReply);
+    rpc GetStockStream (stream StockRequest) returns (stream StockPerDateReply);
 }
 
 message Decimal {
@@ -54,4 +54,11 @@ message StockReply {
   Decimal worstPrice = 3;
   google.protobuf.Timestamp bestDate = 4;
   google.protobuf.Timestamp worstDate = 5;
+}
+
+message StockPerDateReply {
+  string symbol = 1;
+  Decimal bestPrice = 2;
+  Decimal worstPrice = 3;
+  google.protobuf.Timestamp date = 4;
 }

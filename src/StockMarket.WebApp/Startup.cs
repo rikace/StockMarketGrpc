@@ -30,7 +30,7 @@ namespace StockMarket.WebApp
             
              services.AddGrpcClient<StockMarketService.StockMarketServiceClient>(o =>
              {
-                 o.Address = new Uri("https://localhost:7080");
+                 o.Address = new Uri("https://localhost:5005");
              });
         }
 
@@ -59,7 +59,7 @@ namespace StockMarket.WebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapHub<StockMarketStreamHub>("/stockticker");
+                endpoints.MapHub<StockMarketStreamHub>("/stockmarket");
 
                 endpoints.MapControllerRoute(
                     name: "default",
