@@ -21,11 +21,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.Grpc.ClientLib"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.Grpc.Client", "StockMarket.Grpc.Client\StockMarket.Grpc.Client.csproj", "{38A228F7-0D66-4B8E-AAE6-0C8CC1B84F1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Grpc.StreamingClient", "StockMarket.Grpc.StreamingClient\StockMarket.Grpc.StreamingClient.csproj", "{F95936B1-CB7E-4542-A39F-73A2FAA05841}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.Grpc.StreamingClient", "StockMarket.Grpc.StreamingClient\StockMarket.Grpc.StreamingClient.csproj", "{F95936B1-CB7E-4542-A39F-73A2FAA05841}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Grpc.HealthCheckClient", "StockMarket.Grpc.HealthCheckClient\StockMarket.Grpc.HealthCheckClient.csproj", "{BD449218-BA71-4D15-9884-844A2D151367}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.Grpc.HealthCheckClient", "StockMarket.Grpc.HealthCheckClient\StockMarket.Grpc.HealthCheckClient.csproj", "{BD449218-BA71-4D15-9884-844A2D151367}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Grpc.ClientServerStreaming", "StockMarket.Grpc.ClientServerStreaming\StockMarket.Grpc.ClientServerStreaming.csproj", "{0154392F-1993-48B5-9024-D2237FB5BCDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockMarket.Grpc.ClientServerStreaming", "StockMarket.Grpc.ClientServerStreaming\StockMarket.Grpc.ClientServerStreaming.csproj", "{0154392F-1993-48B5-9024-D2237FB5BCDA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "REST", "REST", "{36EF21E2-55F2-437F-A649-5F1AE2224710}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Rest.Client", "REST\StockMarket.Rest.Client\StockMarket.Rest.Client.csproj", "{C1394735-33D2-4B5B-890D-469BE03FD27C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockMarket.Rest.Server", "REST\StockMarket.Rest.Server\StockMarket.Rest.Server.csproj", "{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,9 +75,21 @@ Global
 		{0154392F-1993-48B5-9024-D2237FB5BCDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0154392F-1993-48B5-9024-D2237FB5BCDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0154392F-1993-48B5-9024-D2237FB5BCDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1394735-33D2-4B5B-890D-469BE03FD27C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1394735-33D2-4B5B-890D-469BE03FD27C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1394735-33D2-4B5B-890D-469BE03FD27C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1394735-33D2-4B5B-890D-469BE03FD27C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C1394735-33D2-4B5B-890D-469BE03FD27C} = {36EF21E2-55F2-437F-A649-5F1AE2224710}
+		{3ED8AAA3-94E2-49E7-BBA9-43AA77D209AA} = {36EF21E2-55F2-437F-A649-5F1AE2224710}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4BA96AEC-800E-48CB-B0C3-3CFBF6F66517}

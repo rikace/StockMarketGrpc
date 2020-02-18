@@ -16,7 +16,12 @@ module StockMarket =
     open System.Reactive.Concurrency
     open System.Reactive.Linq
     
-    let tickersDirectory = DirectoryInfo("../StockHistoryGenerator/Tickers")
+    let tickersDirectory = lazy (
+        let mutable path = "../StockHistoryGenerator/Tickers"
+        while Directory.Exists path |> not do
+            path <- "../" + path
+        DirectoryInfo(path)
+    )
 
     let observerOn obs = Observable.ObserveOn(obs, TaskPoolScheduler.Default)
     let subscribeOn obs = Observable.SubscribeOn(obs, TaskPoolScheduler.Default)
@@ -131,7 +136,7 @@ module StockMarket =
         |> subscribeOn
 
     let observableStream(f: string -> string -> Stock option) =
-        tickersDirectory.GetFiles("*.csv")        
+        tickersDirectory.Value.GetFiles("*.csv")        
         |> Seq.map(fun ticker -> ticker, (Path.GetFileNameWithoutExtension(ticker.Name).ToUpper()))
         |> Seq.map(fun (tickerFile, ticker) -> getLinesObservable tickerFile (fun row -> f ticker row))
         |> Seq.reduce(fun a b -> Observable.merge a b)
@@ -144,11 +149,10 @@ module StockMarket =
 
     [<CompiledName("RetrieveStockHistory")>]
     let retrieveStockHistory (ticker: string) = Async.StartAsTask <| async {
-     
-         let files = tickersDirectory.GetFiles("*.csv")
+        
 
          let tickerHistory =
-             tickersDirectory.GetFiles("*.csv")
+             tickersDirectory.Value.GetFiles("*.csv")
              |> Seq.tryFind(fun f -> String.Compare(ticker, Path.GetFileNameWithoutExtension(f.Name), true) = 0)
          
          match tickerHistory with
@@ -195,7 +199,7 @@ module StockMarket =
     }
  
     let stockTickers = lazy (
-        tickersDirectory.GetFiles("*.csv")
+        tickersDirectory.Value.GetFiles("*.csv")
         |> Array.map(fun ticker -> Path.GetFileNameWithoutExtension(ticker.Name).ToUpper(),
                                    File.ReadLines(ticker.FullName) |> Seq.skip 1 |> Seq.head)
         |> Array.map(fun (ticker, row) ->  Stock.parse ticker row)
