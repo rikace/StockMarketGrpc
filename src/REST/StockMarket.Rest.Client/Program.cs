@@ -11,20 +11,28 @@ namespace StockMarket.Rest.Client
         {
             using var httpClient = new HttpClient { BaseAddress = new Uri("https://localhost:5001") };
 
-            using var response = await httpClient.GetAsync("StockMarket");
-
-            if (response.IsSuccessStatusCode)
+            while (true)
             {
-                var json = await response.Content.ReadAsStreamAsync();
+                Console.WriteLine("Symbol: ");
+                string symbol = Console.ReadLine();
+                if (String.IsNullOrWhiteSpace(symbol))
+                    break;
+                
+                using var response = await httpClient.GetAsync($"StockMarket/Get/{symbol}");
 
-                var stocks = await JsonSerializer.DeserializeAsync<StockModels>(json, new JsonSerializerOptions
+                if (response.IsSuccessStatusCode)
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    var json = await response.Content.ReadAsStreamAsync();
 
-                foreach (var stock in stocks.Stocks)
-                {
-                    PrintStockInfo(stock);
+                    var stocks = await JsonSerializer.DeserializeAsync<StockModels>(json, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    foreach (var stock in stocks.Stocks)
+                    {
+                        PrintStockInfo(stock);
+                    }
                 }
             }
 

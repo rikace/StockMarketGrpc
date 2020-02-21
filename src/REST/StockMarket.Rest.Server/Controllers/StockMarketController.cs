@@ -20,9 +20,10 @@ namespace StockMarket.Rest.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<StockModels> Get()
+        [HttpGet("Get/{symbol}")]
+        public async Task<StockModels> Get(string symbol)
         {
-            var stockHistory = await StockGenerator.RetrieveStockHistory("AAPL");
+            var stockHistory = await StockGenerator.RetrieveStockHistory(symbol.ToUpper());
             var stocks = stockHistory.Select(s =>
             {
                 return new StockModel

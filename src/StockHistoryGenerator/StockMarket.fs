@@ -1,5 +1,7 @@
 namespace StockHistoryGenerator
 
+open System
+open System.Collections.Generic
 
 [<AutoOpenAttribute>]
 module internal ThreadSafeRandom =
@@ -25,6 +27,7 @@ module StockMarket =
 
     let observerOn obs = Observable.ObserveOn(obs, TaskPoolScheduler.Default)
     let subscribeOn obs = Observable.SubscribeOn(obs, TaskPoolScheduler.Default)
+    let listToObservable (data: 'a seq) = data.ToObservable()
     
     [<CLIMutableAttribute>]
     type Stock =
@@ -45,7 +48,6 @@ module StockMarket =
               DayLow  = 0M
               DayHigh = 0M
             }
-            
             
         static member parse (symbol : string) (row : string) =
             if row |> String.IsNullOrEmpty then None
@@ -122,7 +124,16 @@ module StockMarket =
         let toObservable scheduler (items : seq<'a>) =
             Observable.ToObservable(items, scheduler)
     
-    let private getLinesObservable (tickerFile : FileInfo) (f: string -> 'a option) =
+    type Data () = 
+        
+        static let data = lazy (Dictionary<string, ResizeArray<Stock>>())
+        static member Stocks = data.Value
+
+    let private getLinesObservable (tickerFile : FileInfo) (maxLines: int) (f: string -> Stock option) =
+        let cont =
+            if maxLines = 0 then Int32.MaxValue
+            else maxLines
+
         asyncSeq {
             use stream = tickerFile.OpenRead()
             use reader = new StreamReader(stream)
@@ -130,26 +141,27 @@ module StockMarket =
                 let! line = reader.ReadLineAsync() |> Async.AwaitTask
                 let stock = f line
                 yield stock
-        } 
+        }
+        |> AsyncSeq.take cont
         |> AsyncSeq.choose id
         |> AsyncSeq.toObservable
         |> subscribeOn
 
-    let observableStream(f: string -> string -> Stock option) =
+    let observableStream (maxLines: int) (f: string -> string -> Stock option) =
         tickersDirectory.Value.GetFiles("*.csv")        
         |> Seq.map(fun ticker -> ticker, (Path.GetFileNameWithoutExtension(ticker.Name).ToUpper()))
-        |> Seq.map(fun (tickerFile, ticker) -> getLinesObservable tickerFile (fun row -> f ticker row))
+        |> Seq.map(fun (tickerFile, ticker) -> 
+                getLinesObservable tickerFile maxLines (fun row -> f ticker row))
         |> Seq.reduce(fun a b -> Observable.merge a b)
         |> observerOn 
 
     [<CompiledName("StockStream")>]
-    let stockStream () =
-        observableStream Stock.parse 
+    let stockStream (maxLines: int) =
+        observableStream maxLines Stock.parse 
 
 
     [<CompiledName("RetrieveStockHistory")>]
-    let retrieveStockHistory (ticker: string) = Async.StartAsTask <| async {
-        
+    let retrieveStockHistory (ticker: string) = Async.StartAsTask <| async {       
 
          let tickerHistory =
              tickersDirectory.Value.GetFiles("*.csv")

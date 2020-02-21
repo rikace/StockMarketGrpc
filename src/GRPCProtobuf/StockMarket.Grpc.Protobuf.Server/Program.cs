@@ -5,15 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using StockGenerator = StockHistoryGenerator.StockMarket;
 
-namespace StockMarket.Grpc.Service
+namespace StockMarket.Grpc.Protobuf.Server
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            StockGenerator.StockStream(10);
             CreateHostBuilder(args).Build().Run();
         }
 

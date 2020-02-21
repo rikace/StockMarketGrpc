@@ -58,11 +58,11 @@ namespace StockMarket.Grpc.Server.Services
 
                     await responseStream.WriteAsync(stock.ToStockData());
 
-                    //await Task.Delay(250); // Gotta look busy
+                    await Task.Delay(250); // Gotta look busy
                 });
 
 
-                var stream = StockGenerator.StockStream();
+                var stream = StockGenerator.StockStream(10);
                 stream
                     .Delay(TimeSpan.FromMilliseconds(100))
                     .Subscribe(actionBlock.AsObserver());
@@ -72,9 +72,7 @@ namespace StockMarket.Grpc.Server.Services
                 //    Observable.FromAsync(async () =>
                 //    {
                 //        _logger.LogInformation("Sending StockMarketStream response");
-
                 //        await responseStream.WriteAsync(stock.ToStockData());
-
                 //        await Task.Delay(250); // Gotta look busy
                 //    })
                 //    ).Concat().Subscribe();
@@ -83,8 +81,7 @@ namespace StockMarket.Grpc.Server.Services
             if (context.CancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation("The client cancelled their request");
-            }
-            // return base.GetStockMarketStream(request, responseStream, context);
+            }            
         }
 
         public override async Task GetStockStream(IAsyncStreamReader<StockRequest> requestStream,
