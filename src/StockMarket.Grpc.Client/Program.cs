@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
@@ -10,6 +12,20 @@ namespace StockMarket.Grpc.Client
 {
     class Program
     {
+        static StockMarketServiceClient Create(string url)
+        {
+            var cert = new X509Certificate2("cert_fleName", "cert_password");
+
+            var handler = new HttpClientHandler();
+            handler.ClientCertificates.Add(cert);
+
+            var client = new HttpClient(handler);
+            var opt = new GrpcChannelOptions { HttpClient = client };
+
+            var channel = GrpcChannel.ForAddress(url, opt);
+            return new StockMarketServiceClient(channel);
+        }
+
         private static async Task Main()
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:5005");

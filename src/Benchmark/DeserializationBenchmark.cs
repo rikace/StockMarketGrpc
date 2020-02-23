@@ -15,15 +15,19 @@ namespace Benchmark
     [RPlotExporter]
     [RankColumn]
     [Config(typeof(Config))]
-    public class SerializationBenchmark
+    public class DeserializationBenchmark
     {
         PersonObject personToSerialize;
-        
+        byte[] personProtobuf;
+        string personJsonNet;
+        string personJsonNetBuffers;
+        string personJsonText;
+
         private class Config : ManualConfig
         {
             public Config()
             {
-                Add(MemoryDiagnoser.Default);                
+                Add(MemoryDiagnoser.Default);
             }
         }
 
@@ -40,32 +44,38 @@ namespace Benchmark
                     { "Stellina", "Number two" }
                 }
             };
+
+
+            personProtobuf = SerializerHelpers.SerializeProtobuf(personToSerialize);
+            personJsonNet = JsonConvert.SerializeObject(personToSerialize);
+            personJsonNetBuffers = SerializerHelpers.SerializeJsonNetBuffers(personToSerialize);
+            personJsonText = System.Text.Json.JsonSerializer.Serialize(personToSerialize);
+        }
+
+       
+        [Benchmark]
+        public void ProtobufDeserialize()
+        {
+            SerializerHelpers.DeserializeProtobuf<PersonObject>(personProtobuf);
+        }
+
+
+        [Benchmark]
+        public void JsonNetDeserialization()
+        {
+            JsonConvert.DeserializeObject<PersonObject>(personJsonNet);
         }
 
         [Benchmark]
-        public void ProtobufSerialize()
+        public void JsonTextDeserialization()
         {
-            SerializerHelpers.SerializeProtobuf(personToSerialize);
-        }
-
-
-        [Benchmark(Baseline = true)]
-        public void JsonNetSerialization()
-        {
-            JsonConvert.SerializeObject(personToSerialize);
-        }
-
-        [Benchmark]
-        public void JsonTextSerialization()
-        {
-            System.Text.Json.JsonSerializer.Serialize(personToSerialize);
+            System.Text.Json.JsonSerializer.Deserialize<PersonObject>(personJsonText);
         }
 
         //[Benchmark]
-        //public void JsonNetSerializationWithBuffers()
+        //public void JsonNetWithBuffersDeserialization()
         //{
-        //    SerializerHelpers.SerializeJsonNetBuffers(personToSerialize);
+        //    SerializerHelpers.DeserializeJsonNetBuffers<PersonObject>(personJsonNetBuffers);
         //}
-
     }
 }

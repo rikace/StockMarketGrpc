@@ -5,9 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\Protos\customtypes.proto">
-          <Link>Protos\customtypes.proto</Link>
-        </Protobuf>
         <Protobuf Include="..\Protos\stockmarket.proto">
           <Link>Protos\stockmarket.proto</Link>
         </Protobuf>

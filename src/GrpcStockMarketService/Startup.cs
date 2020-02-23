@@ -30,6 +30,12 @@ namespace StockMarket.Grpc.Service
             services.AddHealthChecks();
             services.AddSingleton<HealthServiceImpl>();
             services.AddHostedService<StatusService>();
+
+            // Handle error 
+            services.AddGrpc(opt =>
+            {
+                opt.EnableDetailedErrors = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -10,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StockMarket.WebApp.Hubs;
 using StockMarket.Grpc.Proto;
+using StockMarket.WebApp.Services;
+using static StockHistoryGenerator.StockMarket;
+
 namespace StockMarket.WebApp
 {
     public class Startup
@@ -27,8 +30,12 @@ namespace StockMarket.WebApp
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddSignalR();
+
+            services.AddSingleton<IDispatchMessage<Stock>, DispatchStocks>();
             
-             services.AddGrpcClient<StockMarketService.StockMarketServiceClient>(o =>
+            services.AddHostedService<StockMarketStreamService>();
+
+            services.AddGrpcClient<StockMarketService.StockMarketServiceClient>(o =>
              {
                  o.Address = new Uri("https://localhost:5005");
              });
