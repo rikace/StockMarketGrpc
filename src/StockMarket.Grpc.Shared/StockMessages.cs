@@ -1,11 +1,14 @@
-﻿namespace StockMarket.Grpc.Shared
+﻿using System;
+
+namespace StockMarket.Grpc.Shared
 {
     using System;
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
     [DataContract]
-    public class StockData
+    public class 
+  StockData
     {
         [DataMember(Order =1)]
         public string Symbol { get; set; }
@@ -20,12 +23,9 @@
         public decimal DayHigh { get; set; }
 
         [DataMember(Order = 5)]
-        public decimal LastChange { get; set; }
-
-        [DataMember(Order = 6)]
-        public decimal Price { get; set; }
+        public decimal DayClose { get; set; }
         
-        [DataMember(Order = 7)]
+        [DataMember(Order = 6)]
         public DateTime Date { get; set; }
     }
 
@@ -44,5 +44,3 @@
         public string Symbol { get; set; }
     }
 }
-
-     

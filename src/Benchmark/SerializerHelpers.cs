@@ -1,13 +1,14 @@
-﻿using System;
-using System.Buffers;
-using System.IO;
-using System.Text;
-using Newtonsoft.Json;
-using ProtoBuf;
-
 namespace Benchmark
 {
-    public static class SerializerHelpers
+    using System;
+    using System.Buffers;
+    using System.IO;
+    using System.Text;
+    using Newtonsoft.Json;
+    using ProtoBuf;
+
+    
+      public static class SerializerHelpers
     {
         private static ArrayPool<byte> bytePool = ArrayPool<byte>.Shared;
         private static JsonSerializer serializer = JsonSerializer.CreateDefault();

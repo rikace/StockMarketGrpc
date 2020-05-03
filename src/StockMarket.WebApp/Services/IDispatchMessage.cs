@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static StockHistoryGenerator.StockMarket;
+//using static StockHistoryGenerator.StockMarket;
 using System.Threading.Channels;
+using StockMarket.Common;
 
 namespace StockMarket.WebApp.Services
 {
@@ -40,34 +41,4 @@ namespace StockMarket.WebApp.Services
             });
         }
     }
-
-
-    //public class DispatchStocks : IDispatchMessage<Stock>
-    //{
-    //    private readonly ConcurrentDictionary<string, Channel<Stock>> _channels = new ConcurrentDictionary<string, Channel<Stock>>();
-
-    //    public async Task Dispatch(Stock message)
-    //    {
-    //        foreach (var channel in _channels)
-    //        {
-    //            await channel.Value.Writer.WriteAsync(message);
-    //        }
-    //    }
-
-    //    public ChannelReader<Stock> Subscribe(string id)
-    //    {
-    //        return _channels.GetOrAdd(id, Create);
-    //    }
-
-    //    private static Channel<Stock> Create(string _)
-    //    {
-    //        return Channel.CreateBounded<Stock>(new BoundedChannelOptions(32)
-    //        {
-    //            FullMode = BoundedChannelFullMode.DropOldest,
-    //            AllowSynchronousContinuations = false,
-    //            SingleReader = false,
-    //            SingleWriter = false
-    //        });
-    //    }
-    //}
 }

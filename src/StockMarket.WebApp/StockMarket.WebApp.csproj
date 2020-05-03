@@ -1,20 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FSharp.Core" Version="4.7.0" />
-      <PackageReference Include="Google.Protobuf" Version="3.11.3" />
-      <PackageReference Include="Grpc.Net.ClientFactory" Version="2.27.0" />
-      <PackageReference Include="Grpc.Tools" Version="2.27.0" />
-      <PackageReference Include="System.Threading.Tasks.Dataflow" Version="4.11.0" />
+      <Content Update="wwwroot\js\stockmarket.js">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\StockHistoryGenerator\StockHistoryGenerator.fsproj" />
-      <ProjectReference Include="..\StockMArket.Grpc.ClientLib\StockMarket.Grpc.ClientLib.csproj" />
+      <PackageReference Include="Google.Protobuf" Version="3.11.4" />
+      <PackageReference Include="Grpc.Net.ClientFactory" Version="2.28.0" />
+      <PackageReference Include="Grpc.Tools" Version="2.28.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\StockMarket.Common\StockMarket.Common.csproj" />
+      <ProjectReference Include="..\StockMarket.Grpc.ClientLib\StockMarket.Grpc.ClientLib.csproj" />
     </ItemGroup>
 
 

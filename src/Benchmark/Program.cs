@@ -9,11 +9,9 @@ namespace Benchmark
     {
         static void Main(string[] args)
         {
-            var performanceSerializeStats = BenchmarkRunner.Run<SerializationBenchmark>();          
-            var summary = Charting.MapSummary(performanceSerializeStats);
-
-            //var performanceDeserializerStats = BenchmarkRunner.Run<DeserializationBenchmark>();
-            //var summary = Charting.MapSummary(performanceDeserializerStats);
+            var performanceBenchmark = BenchmarkRunner.Run<SerializationBenchmark>();
+            // var performanceBenchmark = BenchmarkRunner.Run<DeserializationBenchmark>();
+            var summary = Charting.MapSummary(performanceBenchmark);
 
             Charting.DrawSummaryReport(summary);
             Console.ReadLine();

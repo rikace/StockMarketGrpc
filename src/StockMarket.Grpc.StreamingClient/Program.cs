@@ -1,12 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
-using StockMarket.Grpc;
 using StockMarket.Grpc.Proto;
 using static StockMarket.Grpc.Proto.StockMarketService;
+
 
 namespace StockMarket.Grpc.StreamingClient
 {
@@ -14,12 +16,16 @@ namespace StockMarket.Grpc.StreamingClient
     {
         static async Task Main(string[] args)
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            
+            using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+            
             var client = new StockMarketServiceClient(channel);
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromSeconds(5));
 
-            using var replies = client.GetStockMarketStream(new Empty(), cancellationToken: cts.Token);
+            using var replies = client.GetStockMarketStream(new StockStreamRequest(), cancellationToken: cts.Token);
 
             try
             {
@@ -28,8 +34,13 @@ namespace StockMarket.Grpc.StreamingClient
                     PrintStockInfo(stockData);
                 }
             }
+            catch (IOException ex)
+            {
+                Console.WriteLine("Stream aborted.");
+            }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
+                replies.Dispose();
                 Console.WriteLine("Stream cancelled.");
             }
 

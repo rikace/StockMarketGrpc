@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-using BenchmarkDotNet.Diagnosers;
-
 namespace Benchmark
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Linq;
+    using BenchmarkDotNet.Attributes;
+    using BenchmarkDotNet.Configs;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+    using Newtonsoft.Json;
+    using BenchmarkDotNet.Diagnosers;
+
     [MemoryDiagnoser]
     [RPlotExporter]
     [RankColumn]
@@ -60,7 +60,7 @@ namespace Benchmark
         }
 
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void JsonNetDeserialization()
         {
             JsonConvert.DeserializeObject<PersonObject>(personJsonNet);

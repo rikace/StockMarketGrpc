@@ -1,5 +1,6 @@
-﻿using System.ServiceModel;
+using System.ServiceModel;
 using System.Threading.Tasks;
+
 
 namespace StockMarket.Grpc.Shared
 {

@@ -1,11 +1,10 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace Benchmark
 {
+    using ProtoBuf;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
 
     [ProtoContract]
     public partial class PersonObject

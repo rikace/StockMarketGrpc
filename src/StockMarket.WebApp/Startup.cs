@@ -8,10 +8,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StockMarket.WebApp.Hubs;
+using StockMarket.Common;
 using StockMarket.Grpc.Proto;
+using StockMarket.WebApp.Hubs;
 using StockMarket.WebApp.Services;
-using static StockHistoryGenerator.StockMarket;
 
 namespace StockMarket.WebApp
 {
@@ -32,13 +32,12 @@ namespace StockMarket.WebApp
             services.AddSignalR();
 
             services.AddSingleton<IDispatchMessage<Stock>, DispatchStocks>();
-            
-            services.AddHostedService<StockMarketStreamService>();
 
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpcClient<StockMarketService.StockMarketServiceClient>(o =>
-             {
-                 o.Address = new Uri("https://localhost:5005");
-             });
+            {
+                o.Address = new Uri("http://localhost:5000");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

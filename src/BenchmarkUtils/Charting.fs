@@ -1,4 +1,4 @@
-namespace BenchmarkUtils
+﻿namespace BenchmarkUtils
 
 open System
 open BenchmarkDotNet.Running

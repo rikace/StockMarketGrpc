@@ -1,4 +1,4 @@
-﻿using Grpc.Net.Client;
+using Grpc.Net.Client;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -10,8 +10,9 @@ using System.Threading.Channels;
 using static StockMarket.Grpc.Proto.StockMarketService;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using StockMarket.Common;
+using StockMarket.Grpc.Proto;
 using Channel = System.Threading.Channels.Channel;
-using static StockHistoryGenerator.StockMarket;
 
 namespace StockMarket.WebApp.Services
 {
@@ -28,7 +29,7 @@ namespace StockMarket.WebApp.Services
 
         static StockMarketServiceClient Create()
         {
-            var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            var channel = GrpcChannel.ForAddress("https://localhost:5000");
             return new StockMarketServiceClient(channel);
         }
 
@@ -40,14 +41,14 @@ namespace StockMarket.WebApp.Services
 
                 var client = Create();
 
-                using var replies = client.GetStockMarketStream(new Empty(), cancellationToken: stoppingToken);
+                using var replies = client.GetStockMarketStream(new StockStreamRequest(), cancellationToken: stoppingToken);
 
                 try
                 {
                     await foreach (var stockData in replies.ResponseStream.ReadAllAsync())
                     {
                         var stock = ToStock(stockData);
-                        PrintStockInfo(stock);
+                        stock.PrintStockInfo();
 
                         await dispatchMessage.Dispatch(stock);
                     }
@@ -66,43 +67,19 @@ namespace StockMarket.WebApp.Services
         static Stock ToStock(StockMarket.Grpc.Proto.StockData stockData)
         {
             var stock = new Stock
-            {
-                Symbol = stockData.Symbol,
-                Date = stockData.Date.ToDateTime(),
-                DayHigh = ToDecimal(stockData.DayHigh),
-                DayLow = ToDecimal(stockData.DayLow),
-                DayOpen = ToDecimal(stockData.DayOpen),
-                LastChange = ToDecimal(stockData.LastChange),
-                Price = ToDecimal(stockData.Price),
-            };
+            (
+                stockData.Symbol,
+                stockData.Date.ToDateTime(),
+                ToDecimal(stockData.DayOpen),
+                ToDecimal(stockData.DayHigh),
+                ToDecimal(stockData.DayLow),
+                ToDecimal(stockData.DayClose)
+            );
             return stock;
         }
-
-        public static decimal ToDecimal(Grpc.Proto.Decimal value) => value.Units + value.Nanos / 1_000_000_000;
-
-        static void PrintStockInfo(Stock stock)
-        {
-            bool compare(string item1, string item2)
-                =>
-                String.Compare(item1, item2, StringComparison.OrdinalIgnoreCase) == 0;
-
-            var symbol = stock.Symbol;
-
-            var color = Console.ForegroundColor;
-            if (compare(symbol, "MSFT"))
-                Console.ForegroundColor = ConsoleColor.Green;
-            else if (compare(symbol, "FB"))
-                Console.ForegroundColor = ConsoleColor.Blue;
-            else if (compare(symbol, "AAPL"))
-                Console.ForegroundColor = ConsoleColor.Red;
-            else if (compare(symbol, "GOOG"))
-                Console.ForegroundColor = ConsoleColor.Magenta;
-            else if (compare(symbol, "AMZN"))
-                Console.ForegroundColor = ConsoleColor.Yellow;
-
-            Console.WriteLine($"{stock.Symbol} |\t\t Date {stock.Date.ToString("MM/dd/yyyy")} | Higher price {stock.DayHigh} | Lower price {stock.DayLow}");
-            Console.ForegroundColor = color;
-        }
+        
+        // TODO
+        private static decimal ToDecimal(Grpc.Proto.Decimal value) => value.Units + value.Nanos / 1_000_000_000;
     }
 }
 

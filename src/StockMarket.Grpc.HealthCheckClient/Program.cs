@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
-
 
 namespace StockMarket.Grpc.HealthCheckClient
 {
     class Program
     {
-        private static async Task Main()
+        static async Task Main(string[] args)
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:5005");
 

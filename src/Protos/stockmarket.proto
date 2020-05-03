@@ -13,7 +13,7 @@ service StockMarketService {
     rpc GetStockHistory (StockHistoryRequest) returns (StockHistoryReply);
 
     // request stock market stream - return StockMarketData stocks array
-    rpc GetStockMarketStream (google.protobuf.Empty) returns (stream StockData);
+    rpc GetStockMarketStream (StockStreamRequest) returns (stream StockData);
 
     // send request as steram for stock + datetime - return stock  
     rpc GetStockStream (stream StockRequest) returns (stream StockPerDateReply);
@@ -40,10 +40,9 @@ message StockData {
   string symbol = 1;  
   Decimal dayOpen = 2;
   Decimal dayLow = 3;
-  Decimal dayHigh = 4;
-  Decimal LastChange = 5;
-  Decimal price = 6;
-  google.protobuf.Timestamp date = 7;
+  Decimal dayHigh = 4;  
+  Decimal dayClose = 5;
+  google.protobuf.Timestamp date = 6;
 }
 
 message StockHistoryReply {
@@ -63,4 +62,7 @@ message StockPerDateReply {
   Decimal bestPrice = 2;
   Decimal worstPrice = 3;
   google.protobuf.Timestamp date = 4;
+}
+
+message StockStreamRequest {
 }

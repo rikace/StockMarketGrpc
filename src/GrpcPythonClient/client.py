@@ -1,6 +1,12 @@
 import grpc
 import google.protobuf
 
+
+# pip install grpcio 
+# pip install grpcio-tools
+# python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. myfile.proto
+
+
 # import the generated classes
 import stockmarket_pb2
 import stockmarket_pb2_grpc

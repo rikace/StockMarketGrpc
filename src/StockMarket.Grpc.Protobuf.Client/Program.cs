@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
@@ -7,12 +6,13 @@ using StockMarket.Grpc.Shared;
 
 namespace StockMarket.Grpc.Protobuf.Client
 {
-    internal class Program
+    class Program
     {
-        private static async Task Main()
+          private static async Task Main()
         {
 
-            using (var channel = GrpcChannel.ForAddress("https://localhost:5012"))
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            using (var channel = GrpcChannel.ForAddress("http://localhost:5012"))
             {
                 var stockMarketService = channel.CreateGrpcService<IStockMarketService>();
 

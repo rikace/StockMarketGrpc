@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
-using StockMarket.Grpc;
 using StockMarket.Grpc.Proto;
-using static StockMarket.Grpc.Proto.StockMarketService;
 
 namespace StockMarket.Grpc.Client
 {
     class Program
     {
-        static StockMarketServiceClient Create(string url)
+        static StockMarketService.StockMarketServiceClient Create(string url)
         {
             var cert = new X509Certificate2("cert_fleName", "cert_password");
 
@@ -23,15 +21,24 @@ namespace StockMarket.Grpc.Client
             var opt = new GrpcChannelOptions { HttpClient = client };
 
             var channel = GrpcChannel.ForAddress(url, opt);
-            return new StockMarketServiceClient(channel);
+            return new StockMarketService.StockMarketServiceClient(channel);
         }
 
         private static async Task Main()
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5005");
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            
+            using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+            var client = new StockMarketService.StockMarketServiceClient(channel);
 
-            var client = new StockMarketServiceClient(channel);
+            await GetStockHistoryAsync(client);
+            
+            Console.ReadKey();
+        }
 
+        static async Task GetStockHistoryAsync(StockMarketService.StockMarketServiceClient client)
+        {
+            
             while (true)
             {
                 Console.WriteLine("Specify Symbol to retrieve history");
@@ -39,21 +46,23 @@ namespace StockMarket.Grpc.Client
                 if (symbol == "q")
                     break;
 
-                var reply = client.GetStockHistory(new StockHistoryRequest
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                
+                var reply = await client.GetStockHistoryAsync(new StockHistoryRequest
                 {
                     Symbol = symbol
-                });
+                }, cancellationToken: cts.Token);
 
                 foreach (var stockData in reply.StockData)
                 {
                     PrintStockInfo(stockData);
                 }
             }
-
-            Console.ReadKey();
         }
 
-        public static decimal ToDecimal(Proto.Decimal value)
+
+        
+        private static decimal ToDecimal(Proto.Decimal value)
 
         {
             return value.Units + value.Nanos / 1_000_000_000;
