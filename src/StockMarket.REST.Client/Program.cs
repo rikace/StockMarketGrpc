@@ -8,11 +8,11 @@ namespace StockMarket.REST.Client
 {
     class Program
     {
-        static async Task Main()
+        static async Task Main(string[] args)
         {
-             await FetchStocks();
             
-            // await FetchStocksWithOffset();
+            // await FetchStocks();
+            await FetchStocksWithOffset();
 
             Console.WriteLine("Press a key to exit");
             Console.ReadKey();
@@ -89,6 +89,8 @@ namespace StockMarket.REST.Client
                             PrintStockInfo(stock);
                         }
                     }
+
+                    await Task.Delay(200);
 
                     offset += count;
                 }

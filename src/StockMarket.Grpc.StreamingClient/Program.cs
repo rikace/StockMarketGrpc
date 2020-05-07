@@ -23,8 +23,10 @@ namespace StockMarket.Grpc.StreamingClient
             var client = new StockMarketServiceClient(channel);
 
             var cts = new CancellationTokenSource();
+            
             cts.CancelAfter(TimeSpan.FromSeconds(5));
 
+            
             using var replies = client.GetStockMarketStream(new StockStreamRequest(), cancellationToken: cts.Token);
 
             try
@@ -34,16 +36,13 @@ namespace StockMarket.Grpc.StreamingClient
                     PrintStockInfo(stockData);
                 }
             }
-            catch (IOException ex)
-            {
-                Console.WriteLine("Stream aborted.");
-            }
-            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
+            catch  
             {
                 replies.Dispose();
                 Console.WriteLine("Stream cancelled.");
             }
-
+            
+            
             Console.WriteLine("Press a key to exit");
 
             Console.ReadKey();

@@ -8,10 +8,10 @@ namespace StockMarket.Grpc.Protobuf.Client
 {
     class Program
     {
-          private static async Task Main()
+        private static async Task Main()
         {
-
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            
             using (var channel = GrpcChannel.ForAddress("http://localhost:5012"))
             {
                 var stockMarketService = channel.CreateGrpcService<IStockMarketService>();
@@ -23,7 +23,7 @@ namespace StockMarket.Grpc.Protobuf.Client
                     if (String.IsNullOrWhiteSpace(symbol))
                         break;
 
-                    var request = new StockRequest { Symbol = symbol };
+                    var request = new StockRequest {Symbol = symbol};
                     var stockResult = await stockMarketService.GetStockAsync(request);
 
 
@@ -42,7 +42,7 @@ namespace StockMarket.Grpc.Protobuf.Client
         {
             bool compare(string item1, string item2)
                 =>
-                String.Compare(item1, item2, StringComparison.OrdinalIgnoreCase) == 0;
+                    String.Compare(item1, item2, StringComparison.OrdinalIgnoreCase) == 0;
 
             var symbol = stockData.Symbol;
 
@@ -58,7 +58,8 @@ namespace StockMarket.Grpc.Protobuf.Client
             else if (compare(symbol, "AMZN"))
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
-            Console.WriteLine($"Symbol {stockData.Symbol} - Date {stockData.Date.ToString("MM/dd/yyyy")} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
+            Console.WriteLine(
+                $"Symbol {stockData.Symbol} - Date {stockData.Date.ToString("MM/dd/yyyy")} - High Price {stockData.DayHigh} - Low Price {stockData.DayLow}");
             Console.ForegroundColor = color;
         }
     }

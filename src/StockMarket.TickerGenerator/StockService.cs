@@ -111,7 +111,7 @@ namespace StockMarket.TickerGenerator
                 {
                     var line = await reader.ReadLineAsync();
                     var stock = Stock.Parse(symbol, line);
-                    if (stock != null) // && stock.Date == date.Date)
+                    if (stock != null) 
                         return stock;
                 }
             }

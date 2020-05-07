@@ -1,5 +1,3 @@
-
-
 using System;
 using StockMarket.Grpc.Proto;
 

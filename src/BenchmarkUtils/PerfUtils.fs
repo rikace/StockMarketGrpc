@@ -1,4 +1,5 @@
 namespace BenchmarkUtils
+#nowarn "42"
 
 open System
 open System.Threading
@@ -63,7 +64,6 @@ module Benchmark =
 
 module PerfUtil =
     open System
-    #nowarn "42"
     
     module PerTypes =
         open System

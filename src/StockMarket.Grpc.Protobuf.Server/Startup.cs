@@ -42,17 +42,11 @@ namespace StockMarket.Grpc.Protobuf.Server
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
-
             app.UseRouting();
 
-            // app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
-            {
-                
+            {   
                 endpoints.MapGrpcService<StockMarketService>();
-
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

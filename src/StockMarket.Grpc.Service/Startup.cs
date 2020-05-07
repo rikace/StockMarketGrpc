@@ -18,14 +18,6 @@ namespace StockMarket.Grpc.Service
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddGrpc(o =>
-            //{
-           
-            //});
-
-
-            // gRPC is enabled with the AddGrpc method.
-            services.AddGrpc();
             
             services.AddHealthChecks();
             services.AddSingleton<HealthServiceImpl>();
@@ -36,7 +28,10 @@ namespace StockMarket.Grpc.Service
 
             services.AddSingleton<IStockService, StockService>();
             services.AddHostedService<StatusService>();
-            
+         
+            // gRPC is enabled with the AddGrpc method.
+            // services.AddGrpc();
+
             // Handle error 
             services.AddGrpc(opt =>
             {

@@ -17,11 +17,11 @@ namespace Benchmark
     [Config(typeof(Config))]
     public class DeserializationBenchmark
     {
-        PersonObject personToSerialize;
-        byte[] personProtobuf;
-        string personJsonNet;
-        string personJsonNetBuffers;
-        string personJsonText;
+        PersonObject _personToSerialize;
+        byte[] _personProtobuf;
+        string _personJsonNet;
+        //string personJsonNetBuffers;
+        string _personJsonText;
 
         private class Config : ManualConfig
         {
@@ -34,7 +34,7 @@ namespace Benchmark
         [GlobalSetup]
         public void Setup()
         {
-            personToSerialize = new PersonObject()
+            _personToSerialize = new PersonObject()
             {
                 FullName = "Riccardo Terrell",
                 Birthday = new DateTime(1975, 07, 07),
@@ -46,30 +46,30 @@ namespace Benchmark
             };
 
 
-            personProtobuf = SerializerHelpers.SerializeProtobuf(personToSerialize);
-            personJsonNet = JsonConvert.SerializeObject(personToSerialize);
-            personJsonNetBuffers = SerializerHelpers.SerializeJsonNetBuffers(personToSerialize);
-            personJsonText = System.Text.Json.JsonSerializer.Serialize(personToSerialize);
+            _personProtobuf = SerializerHelpers.SerializeProtobuf(_personToSerialize);
+            _personJsonNet = JsonConvert.SerializeObject(_personToSerialize);
+            // personJsonNetBuffers = SerializerHelpers.SerializeJsonNetBuffers(_personToSerialize);
+            _personJsonText = System.Text.Json.JsonSerializer.Serialize(_personToSerialize);
         }
 
        
         [Benchmark]
         public void ProtobufDeserialize()
         {
-            SerializerHelpers.DeserializeProtobuf<PersonObject>(personProtobuf);
+            SerializerHelpers.DeserializeProtobuf<PersonObject>(_personProtobuf);
         }
 
 
         [Benchmark(Baseline = true)]
         public void JsonNetDeserialization()
         {
-            JsonConvert.DeserializeObject<PersonObject>(personJsonNet);
+            JsonConvert.DeserializeObject<PersonObject>(_personJsonNet);
         }
 
         [Benchmark]
         public void JsonTextDeserialization()
         {
-            System.Text.Json.JsonSerializer.Deserialize<PersonObject>(personJsonText);
+            System.Text.Json.JsonSerializer.Deserialize<PersonObject>(_personJsonText);
         }
 
         //[Benchmark]

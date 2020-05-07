@@ -46,12 +46,12 @@ namespace StockMarket.Grpc.Client
                 if (symbol == "q")
                     break;
 
-                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                CancellationToken token = CancellationToken.None;
                 
                 var reply = await client.GetStockHistoryAsync(new StockHistoryRequest
                 {
                     Symbol = symbol
-                }, cancellationToken: cts.Token);
+                }, cancellationToken: token);
 
                 foreach (var stockData in reply.StockData)
                 {
@@ -63,7 +63,6 @@ namespace StockMarket.Grpc.Client
 
         
         private static decimal ToDecimal(Proto.Decimal value)
-
         {
             return value.Units + value.Nanos / 1_000_000_000;
         }

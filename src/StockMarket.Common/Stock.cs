@@ -35,11 +35,9 @@ namespace StockMarket.Common
                 var low = ParseDecimal(cells[3]);
                 var close = ParseDecimal(cells[4]);
                 return new Stock(symbol, date.ToUniversalTime(), open, high, low, close);
+                
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private static decimal ParseDecimal(string s)

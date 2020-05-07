@@ -7,7 +7,7 @@ namespace Benchmark
     using System.Text;
 
     [ProtoContract]
-    public partial class PersonObject
+    public class PersonObject
     {
         [ProtoMember(1)]
         public string FullName { get; set; }
@@ -20,11 +20,6 @@ namespace Benchmark
 
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
             var comparer = obj as PersonObject;
             if (comparer == null)
             {
